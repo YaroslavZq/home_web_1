@@ -2,6 +2,7 @@ from datetime import date, datetime
 from collections import UserDict
 from re import search, match
 import pickle
+from abc import ABC, abstractmethod
 
 class AddressBook(UserDict):
 
@@ -136,8 +137,6 @@ class Record():
             self.phones.remove(rec_phone)
             return True
     
-    
-
 
     def add_email(self, email):
         if self.email is None:
@@ -164,6 +163,7 @@ class Record():
     def delete_birthday(self):
         self.birthday = None
         return True
+
 
     def delete_address(self):
         self.address = None
@@ -192,7 +192,7 @@ class Record():
         else:
             return 'Empty'        
 
-class Field:
+class Field(ABC):
     def __init__(self, value):
         self._value = None
         self.value = value
@@ -205,20 +205,14 @@ class Field:
         return self._value
 
     @value.setter
+    @abstractmethod
     def value(self, value):
-        self._value = value
+        pass
 
 class Address(Field):
 
     @Field.value.setter
     def value(self, value):
-        if value:
-            self._value = self.check_address(value)
-        else:
-            self._value = ''
-
-    @staticmethod
-    def check_address(value):
         clean_address = (
                         value.strip()
                         .replace("(", "")
@@ -230,16 +224,13 @@ class Address(Field):
         match_value = search(r"\d{5}\ \м.\w+\ \в.\w+(\d+|\D+)+", clean_address)
         if not match_value:
             raise ValueError(f"Invalide address format {clean_address}. Address format should be IIII, м.Місто, в.Вулиця, дод.записи")
-        return str(value)
+        value = str(value)
+        self._value = value
 
 class Birthday(Field):
 
     @Field.value.setter
     def value(self, value):
-        self._value = self.check_date(value)
-
-    @staticmethod
-    def check_date(value):
         value = value.strip()
 
         for separator in (".", ",", "-", ":", "/"):
@@ -254,13 +245,11 @@ class Birthday(Field):
         if int(value) > 31:
             return date(int(value), int(args[0]), int(args[1]))
 
-        return date(int(args[1]), int(args[0]), int(value))
+        value =  date(int(args[1]), int(args[0]), int(value))
+        self._value = value
+
 
 class Phone(Field):
-
-    def __repr__(self):
-        return self.value
-
 
     @Field.value.setter
     def value(self, value:str):
@@ -284,7 +273,10 @@ class Email(Field):
         self._value = value
 
 class Name(Field):
-    pass
+
+    @Field.value.setter
+    def value(self, value:str):
+        self._value = value
 
 class Note:
     def __init__(self, note, description = '', tags= ''):
