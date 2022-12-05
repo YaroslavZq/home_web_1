@@ -8,8 +8,11 @@ packages = [{include = "home_web_1"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-levenshtein = "^0.20.8"
+levenshtein = "==0.20.8"
 
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
 
 [build-system]
 requires = ["poetry-core"]
