@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "home-web-1"
+version = "0.1.0"
+description = ""
+authors = ["YaroslavZq <svyatikua2@gmail.com>"]
+readme = "README.md"
+packages = [{include = "home_web_1"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+levenshtein = "^0.20.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
